@@ -288,6 +288,40 @@ module.exports = function (config) {
   };
 
   /**
+   * Add names to a database for admins and readers
+   *
+   * @param {Array} adminNames Names to assign to administrator of the database
+   * @param {Array} memberNames Names to assign to members of the database
+   * @param {Function} callback Function called when the roles was created
+   * @return {callback(err, res)} The callback to execute as result
+   * @param {Object} callback.err Error during operation
+   * @param {Object} callback.res Response of the operation
+   */
+  couchDB.Database.prototype.addNames = function (adminNames, memberNames, callback) {
+    // add admin user for newly database
+    var self = this;
+    self.save('_security', {
+      admins: {
+        names: adminNames
+      },
+      readers: {
+        names: memberNames
+      }
+    }, function (err, res) {
+      if (logger) {
+        if (err) {
+          logger.error('%s unable to create "%s" admin names and/or "%s" readers names on "%s" database due the error %s',
+            mName, adminNames.join(', '), memberNames.join(', '), self.name, err.error.toUpperCase());
+        } else {
+          logger.info('%s "%s" admin names and "%s" readers names created on "%s" database',
+            mName, adminNames.join(', '), memberNames.join(', '), self.name);
+        }
+      }
+      return callback(err, res);
+    });
+  };
+
+  /**
    * Create a new database and add new user
    *
    * @param {String} username Username for new user
