@@ -117,7 +117,7 @@ module.exports = function (config) {
     if (newDoc._deleted === true) {
       // allow deletes by admins and matching users
       // without checking the other fields
-      if (userCtx.roles.indexOf('_admin') !== -1) {
+      if (userCtx.roles.indexOf('_admin') !== -1 || userCtx.roles.indexOf('admin') !== -1) {
         return;
       }
       throw ({forbidden: 'Only admins may delete other user docs.'});
@@ -125,7 +125,7 @@ module.exports = function (config) {
 
     var is_server_or_database_admin = function (userCtx, secObj) {
       // see if the user is a server admin
-      if (userCtx.roles.indexOf('_admin') !== -1) {
+      if (userCtx.roles.indexOf('_admin') !== -1 || userCtx.roles.indexOf('admin') !== -1) {
         return true; // a server admin
       }
 
@@ -311,7 +311,7 @@ module.exports = function (config) {
       if (logger) {
         if (err) {
           logger.error('%s unable to create "%s" admin names and/or "%s" readers names on "%s" database due the error %s',
-            mName, adminNames.join(', '), memberNames.join(', '), self.name, err.error.toUpperCase());
+            mName, adminNames.join(', '), memberNames.join(', '), self.name, err.error);
         } else {
           logger.info('%s "%s" admin names and "%s" readers names created on "%s" database',
             mName, adminNames.join(', '), memberNames.join(', '), self.name);
